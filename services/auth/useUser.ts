@@ -9,6 +9,7 @@ export const useUser = () => {
   const router = useRouter();
 
   const logout = async () => {
+    removeAuthCookie();
     return firebaseAuth
       .signOut()
       .then(() => {
