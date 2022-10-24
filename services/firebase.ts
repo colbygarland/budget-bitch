@@ -1,5 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import Router from 'next/router';
+import cookies from 'js-cookie';
+import { setAuthCookie } from './auth/authCookie';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,8 +15,31 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const firebaseApp = initializeApp(firebaseConfig);
 
 // Auth
 export const firebaseAuthProvider = new GoogleAuthProvider();
-export const firebaseAuth = getAuth(app);
+export const firebaseAuth = getAuth(firebaseApp);
+
+export const googleLogin = () => {
+  signInWithPopup(firebaseAuth, firebaseAuthProvider)
+    .then((result) => {
+      const { user } = result;
+
+      // Save our state to a cookie
+      setAuthCookie(user);
+
+      // Redirect to the home page
+      Router.replace('/');
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+};

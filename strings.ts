@@ -1,2 +1,3 @@
-export const PAGE_TITLE = 'NextJS Starter';
-export const PAGE_DESCRIPTION = 'NextJS Starter project. Uses NextJS, Tailwind, Mobx-State-Tree.';
+export const PAGE_TITLE = 'BudgetBitch 💅';
+export const SITE_TITLE = PAGE_TITLE;
+export const PAGE_DESCRIPTION = 'Budget app for the basic bitch in yo life.';

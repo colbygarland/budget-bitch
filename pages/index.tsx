@@ -1,7 +1,14 @@
+import { SITE_TITLE } from '../strings';
+import { Container, Heading } from '@chakra-ui/react';
+import { getAuth } from 'firebase/auth';
+import { useUser } from '../services/auth/useUser';
+
 export default function Home() {
+  const { user } = useUser();
   return (
-    <div>
-      <h1 className="text-5xl">Next TS</h1>
-    </div>
+    <Container>
+      <Heading as="h1">{SITE_TITLE}</Heading>
+      <p>Welcome, {user?.displayName}</p>
+    </Container>
   );
 }

@@ -1,13 +1,23 @@
-import { types } from 'mobx-state-tree';
+import { Instance, types } from 'mobx-state-tree';
 
-export const authStore = types
+const User = types.model({
+  id: types.identifier,
+  name: types.string,
+  email: types.string,
+});
+interface IUser extends Instance<typeof User> {}
+
+export const AuthStore = types
   .model('AuthStore')
   .props({
-    isLoggedIn: types.optional(types.boolean, false),
+    user: types.reference(User),
   })
   .actions((self) => ({
-    redirectToLogin: () => {
-      if (!self.isLoggedIn) {
-      }
+    setUser: (user: IUser) => {
+      self.user = {
+        email: user.email,
+        id: user.id,
+        name: user.name,
+      };
     },
   }));
