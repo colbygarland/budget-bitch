@@ -1,6 +1,5 @@
 import { SITE_TITLE } from '../strings';
 import { Container, Heading } from '@chakra-ui/react';
-import { getAuth } from 'firebase/auth';
 import { useUser } from '../services/auth/useUser';
 
 export default function Home() {

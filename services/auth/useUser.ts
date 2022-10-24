@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { firebaseAuth } from '../firebase';
+import { User } from 'firebase/auth';
 import { getAuthCookie, removeAuthCookie, setAuthCookie } from './authCookie';
 
 export const useUser = () => {
-  const [user, setUser] = useState<{} | null>();
+  const [user, setUser] = useState<User | null>();
   const router = useRouter();
 
   const logout = async () => {
