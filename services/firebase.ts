@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import Router from 'next/router';
-import cookies from 'js-cookie';
 import { setAuthCookie } from './auth/authCookie';
 
 const firebaseConfig = {
@@ -32,14 +31,14 @@ export const googleLogin = () => {
       // Redirect to the home page
       Router.replace('/');
     })
-    .catch((error) => {
+    .catch((_error) => {
       // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
+      // // The email of the user's account used.
+      // const email = error.customData.email;
+      // // The AuthCredential type that was used.
+      // const credential = GoogleAuthProvider.credentialFromError(error);
       // ...
     });
 };
