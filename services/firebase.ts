@@ -20,25 +20,25 @@ export const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuthProvider = new GoogleAuthProvider();
 export const firebaseAuth = getAuth(firebaseApp);
 
-export const googleLogin = () => {
-  signInWithPopup(firebaseAuth, firebaseAuthProvider)
-    .then((result) => {
-      const { user } = result;
+// TODO: handle errors from login gracefully
+export const googleLogin = async () => {
+  const response = await signInWithPopup(firebaseAuth, firebaseAuthProvider);
+  const { user } = response;
+  // Ensure this user is authorized to use this app
+  // comes in as [userId, anotherUserId]
+  const authorizedUsers = process.env.NEXT_PUBLIC_AUTHORIZED_USERS?.substring(1)
+    .substring(0, process.env.NEXT_PUBLIC_AUTHORIZED_USERS.length - 1)
+    .split(',');
+  console.log(user);
+  console.log(authorizedUsers);
 
-      // Save our state to a cookie
-      setAuthCookie(user);
+  if (authorizedUsers?.includes(user.uid)) {
+    // Save our state to a cookie
+    setAuthCookie(user);
 
-      // Redirect to the home page
-      Router.replace('/');
-    })
-    .catch((_error) => {
-      // Handle Errors here.
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // // The email of the user's account used.
-      // const email = error.customData.email;
-      // // The AuthCredential type that was used.
-      // const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-    });
+    // Redirect to the home page
+    Router.replace('/');
+  }
+
+  return false;
 };
