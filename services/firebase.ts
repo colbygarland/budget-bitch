@@ -26,18 +26,17 @@ export const googleLogin = async () => {
   const { user } = response;
   // Ensure this user is authorized to use this app
   // comes in as [userId, anotherUserId]
-  const authorizedUsers = process.env.NEXT_PUBLIC_AUTHORIZED_USERS?.substring(1)
-    .substring(0, process.env.NEXT_PUBLIC_AUTHORIZED_USERS.length - 1)
-    .split(',');
+  const authorizedUsers = JSON.parse(process.env.NEXT_PUBLIC_AUTHORIZED_USERS as string);
+
   console.log(user);
   console.log(authorizedUsers);
 
   if (authorizedUsers?.includes(user.uid)) {
     // Save our state to a cookie
     setAuthCookie(user);
-
     // Redirect to the home page
     Router.replace('/');
+    return true;
   }
 
   return false;
