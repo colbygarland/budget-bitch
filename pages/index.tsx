@@ -5,7 +5,7 @@ import { Header } from '../components/Header';
 import { colors } from '../theme/colors';
 import { Button } from '../components/Button';
 import { useEffect, useState } from 'react';
-import { addExpense, Expense, getExpenseTypes } from '../services/api/expense';
+import { addExpense, Expense, getExpenseTypes, useGetExpenses } from '../services/api/expense';
 import {
   useDisclosure,
   Modal,
@@ -65,6 +65,7 @@ export default function Home() {
   // @ts-ignore
   const [selectedExpenseType, setSelectedExpenseType] = useState<Expense | null>('');
   const [amount, setAmount] = useState(null);
+  const expenses = useGetExpenses();
 
   function handleOnClick() {
     if (selectedExpenseType === null || amount === null) {
@@ -140,6 +141,13 @@ export default function Home() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {expenses.map((expense) => {
+        return (
+          <p>
+            type: {expense.expenseType}, amount: {expense.amount}
+          </p>
+        );
+      })}
     </Page>
   );
 }
