@@ -58,29 +58,58 @@ const FormBlock = styled(FormControl)`
   margin-bottom: 10px;
 `;
 
+function calculateExpenses(expenses: Expense[]) {
+  let total = 0;
+  expenses.map((expense) => {
+    total += Number(expense.amount);
+  });
+  return total;
+}
+
 export default function Home() {
   const { user } = useUser();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [expenseTypes, setExpenseTypes] = useState<string[]>([]);
   // @ts-ignore
   const [selectedExpenseType, setSelectedExpenseType] = useState<Expense | null>('');
+  const [newExpenseType, setNewExpenseType] = useState('');
   const [amount, setAmount] = useState(null);
   const expenses = useGetExpenses();
 
-  function handleOnClick() {
+  function resetState() {
+    // reset the state
+    // @ts-ignore
+    setSelectedExpenseType('');
+    setNewExpenseType('');
+    setAmount(null);
+  }
+
+  async function handleOnClick() {
     if (selectedExpenseType === null || amount === null) {
       return; // TODO: add error handling
     }
+    // if adding a new expense type, use that instead
     // @ts-ignore
-    addExpense(selectedExpenseType, amount);
+    addExpense(newExpenseType !== '' ? newExpenseType : selectedExpenseType, amount);
+    await getTypes();
     onClose();
+    resetState();
   }
 
-  useEffect(() => {
+  function handleClose() {
+    onClose();
+    resetState();
+  }
+
+  async function getTypes() {
     getExpenseTypes().then((types) => {
       // @ts-ignore
       setExpenseTypes(types);
     });
+  }
+
+  useEffect(() => {
+    getTypes();
   }, []);
 
   if (!user) {
@@ -95,7 +124,7 @@ export default function Home() {
     <Page>
       <Header pageTitle="Dashboard" />
       <Price>
-        $ 1,460.50 <Pill>+8%</Pill>
+        $ {calculateExpenses(expenses)} <Pill>+8%</Pill>
       </Price>
       <p>Out of $4,000 budgeted for this month</p>
       <Button onClick={onOpen}>+ Add Expense</Button>
@@ -115,11 +144,28 @@ export default function Home() {
                 // @ts-ignore
                 onChange={(e) => setSelectedExpenseType(e.target.value)}
               >
-                {expenseTypes.map((type) => (
-                  <option value={type}>{type}</option>
+                {expenseTypes?.map((type) => (
+                  <option value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
                 ))}
+                <option value="add-new">+ Add New Type</option>
               </Select>
             </FormBlock>
+            {
+              // @ts-ignore
+              selectedExpenseType === 'add-new' && (
+                <FormBlock>
+                  <FormLabel>Expense Type</FormLabel>
+                  <Input
+                    placeholder="Expense type"
+                    type="text"
+                    onChange={(e) => {
+                      // @ts-ignore
+                      setNewExpenseType(e.target.value);
+                    }}
+                  />
+                </FormBlock>
+              )
+            }
             <FormBlock>
               <FormLabel>Amount</FormLabel>
               <Input
@@ -135,7 +181,7 @@ export default function Home() {
 
           <ModalFooter>
             <Button onClick={handleOnClick}>+ Add Expense</Button>
-            <Button onClick={onClose} type="outline">
+            <Button onClick={handleClose} type="outline">
               Close
             </Button>
           </ModalFooter>
