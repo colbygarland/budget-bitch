@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import Router from 'next/router';
 import { setAuthCookie } from './auth/authCookie';
@@ -11,6 +12,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  databaseUrl: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_NAME,
 };
 
 // Initialize Firebase
@@ -19,6 +21,9 @@ export const firebaseApp = initializeApp(firebaseConfig);
 // Auth
 export const firebaseAuthProvider = new GoogleAuthProvider();
 export const firebaseAuth = getAuth(firebaseApp);
+
+// Database
+export const firebaseDatabase = getDatabase(firebaseApp);
 
 // TODO: handle errors from login gracefully
 export const googleLogin = async () => {
