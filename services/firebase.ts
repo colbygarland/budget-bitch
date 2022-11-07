@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import Router from 'next/router';
 import { setAuthCookie } from './auth/authCookie';
