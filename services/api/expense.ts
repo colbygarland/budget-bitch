@@ -1,5 +1,6 @@
 import { child, get, ref, set, push, onValue } from 'firebase/database';
 import { useEffect, useState } from 'react';
+import { getCurrentDate } from '../../utils/date';
 import { firebaseDatabase } from '../firebase';
 
 export interface Expense {
@@ -8,13 +9,13 @@ export interface Expense {
   createdAt: number;
 }
 
-export const addExpense = async (expenseType: string, amount: number, date?: Date) => {
+export const addExpense = async (expenseType: string, amount: number, date?: string) => {
   const expenseRef = ref(firebaseDatabase, 'expenses');
   const newExpense = push(expenseRef);
   set(newExpense, {
     expenseType,
     amount,
-    createdAt: date ?? Date.now(),
+    createdAt: date ?? getCurrentDate(),
   });
 };
 

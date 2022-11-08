@@ -2,6 +2,7 @@ import { FormControl, FormLabel, Select, FormErrorMessage, Input } from '@chakra
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { addExpense, getExpenseTypes } from '../../services/api/expense';
+import { getCurrentDate } from '../../utils/date';
 import { Button } from '../Button';
 
 const FormBlock = styled(FormControl)`
@@ -11,10 +12,12 @@ const FormBlock = styled(FormControl)`
 export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
   const [expenseTypes, setExpenseTypes] = useState<string[]>([]);
   const [selectedExpenseType, setSelectedExpenseType] = useState<string | null>(null);
-  const [selectedExpenseError, setSelectedExpenseError] = useState('');
   const [newExpenseType, setNewExpenseType] = useState('');
   const [amount, setAmount] = useState<number | null>(null);
+  const [date, setDate] = useState(getCurrentDate());
+
   const [amountError, setAmountError] = useState('');
+  const [selectedExpenseError, setSelectedExpenseError] = useState('');
 
   function resetState() {
     setSelectedExpenseType(null);
@@ -41,7 +44,7 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
       return;
     }
     // if adding a new expense type, use that instead
-    addExpense(newExpenseType !== '' ? newExpenseType : (selectedExpenseType as unknown as string), amount);
+    addExpense(newExpenseType !== '' ? newExpenseType : (selectedExpenseType as unknown as string), amount, date);
     await getTypes();
     onClose();
     resetState();
@@ -98,6 +101,17 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
           onChange={(e) => {
             setAmount(e.target.value as unknown as number);
             setAmountError('');
+          }}
+        />
+        {amountError && <FormErrorMessage>{amountError}</FormErrorMessage>}
+      </FormBlock>
+      <FormBlock>
+        <FormLabel>Date</FormLabel>
+        <Input
+          type="date"
+          value={date as unknown as string}
+          onChange={(e) => {
+            setDate(e.target.value as string);
           }}
         />
         {amountError && <FormErrorMessage>{amountError}</FormErrorMessage>}
