@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { HiDotsHorizontal } from 'react-icons/hi';
+import { HiOutlineMenuAlt3, HiOutlineX } from 'react-icons/hi';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { useUser } from '../services/auth/useUser';
 const Container = styled.header`
   background: ${colors.primary};
   padding: ${spacing.sm};
-  margin-bottom: 80px;
+  margin-bottom: 40px;
   text-align: center;
 `;
 
@@ -20,14 +20,14 @@ const Title = styled.h2`
   font-weight: 700;
 `;
 
-const MenuButton = styled(HiDotsHorizontal)`
+const MenuButton = styled(HiOutlineMenuAlt3).attrs({ size: 30 })`
   fill: ${colors.white};
   position: absolute;
-  right: 30px;
-  top: 30px;
+  right: 20px;
+  top: 20px;
 `;
 
-const Menu = styled.div`
+const Menu = styled.div<{ show?: boolean }>`
   text-align: left;
   position: fixed;
   inset: 0;
@@ -37,20 +37,35 @@ const Menu = styled.div`
   color: ${colors.primary};
   z-index: ${zIndex[50]};
   padding: ${spacing.lg};
+  transition: 0.3s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: -1;
+
+  ${({ show }) =>
+    show &&
+    `
+    opacity: 1;
+    visibility: visible;
+    z-index: 100;
+  `}
 `;
 
-const CloseButton = styled.button`
-  position: fixed;
-  top: 25px;
-  right: 30px;
+const CloseButton = styled(HiOutlineX).attrs({ size: 30 })`
+  position: absolute;
+  top: 20px;
+  right: 20px;
 `;
 
 const MenuList = styled.ul`
   list-style: none;
   font-size: ${typography.size.xl};
+  margin-top: 50px;
 `;
 
-const MenuItem = styled.li``;
+const MenuItem = styled.li`
+  margin-bottom: 15px;
+`;
 
 export const Header = ({ pageTitle }: { pageTitle: string }) => {
   const { logout } = useUser();
@@ -60,26 +75,24 @@ export const Header = ({ pageTitle }: { pageTitle: string }) => {
     <Container>
       <Title>{pageTitle}</Title>
       <MenuButton onClick={() => setMenuVisible(!menuVisible)} />
-      {menuVisible && (
-        <Menu>
-          <CloseButton onClick={() => setMenuVisible(false)}>✖</CloseButton>
-          <MenuList>
-            <MenuItem>
-              <Link href="/">Home</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link href="/expenses">Expenses</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link href="/income">Income</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link href="/settings">Settings</Link>
-            </MenuItem>
-            <MenuItem onClick={logout}>Logout</MenuItem>
-          </MenuList>
-        </Menu>
-      )}
+      <Menu show={menuVisible}>
+        <CloseButton onClick={() => setMenuVisible(false)} />
+        <MenuList>
+          <MenuItem>
+            <Link href="/">Home</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link href="/expenses">Expenses</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link href="/income">Income</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link href="/settings">Settings</Link>
+          </MenuItem>
+          <MenuItem onClick={logout}>Logout</MenuItem>
+        </MenuList>
+      </Menu>
     </Container>
   );
 };
