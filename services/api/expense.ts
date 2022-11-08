@@ -9,13 +9,21 @@ export interface Expense {
   createdAt: number;
 }
 
-export const addExpense = async (expenseType: string, amount: number, date?: string) => {
+export const addExpense = async (
+  expenseType: string,
+  amount: number,
+  date?: string,
+  frequency?: string,
+  parentExpenseType?: string
+) => {
   const expenseRef = ref(firebaseDatabase, 'expenses');
   const newExpense = push(expenseRef);
   set(newExpense, {
     expenseType,
     amount,
     createdAt: date ?? getCurrentDate(),
+    frequency: frequency ?? 'Monthly',
+    parentExpenseType: parentExpenseType ?? '',
   });
 };
 

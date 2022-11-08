@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Select, FormErrorMessage, Input } from '@chakra-ui/react';
+import { FormControl, FormLabel, Select, FormErrorMessage, Input, RadioGroup, Stack, Radio } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { addExpense, getExpenseTypes } from '../../services/api/expense';
@@ -6,7 +6,11 @@ import { getCurrentDate } from '../../utils/date';
 import { Button } from '../Button';
 
 const FormBlock = styled(FormControl)`
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+`;
+
+const Label = styled(FormLabel)`
+  font-weight: 700 !important;
 `;
 
 export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
@@ -15,9 +19,15 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
   const [newExpenseType, setNewExpenseType] = useState('');
   const [amount, setAmount] = useState<number | null>(null);
   const [date, setDate] = useState(getCurrentDate());
+  const [frequency, setFrequency] = useState<string>('Monthly');
+  const [budgetedAmount, setBudgetedAmount] = useState<number | null>(null);
+  const [selectedParentExpenseType, setSelectedParentExpenseType] = useState<string | null>(null);
 
+  // Error handlers
   const [amountError, setAmountError] = useState('');
   const [selectedExpenseError, setSelectedExpenseError] = useState('');
+  const [newExpenseTypeError, setNewExpenseTypeError] = useState('');
+  const [budgetedAmountError, setBudgetedAmountError] = useState('');
 
   function resetState() {
     setSelectedExpenseType(null);
@@ -35,16 +45,43 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
     });
   }
 
-  async function handleOnClick() {
+  function hasErrors() {
+    let hasError = false;
     if (selectedExpenseType === null) {
       setSelectedExpenseError('Please select an Expense Type.');
+      hasError = true;
     }
     if (amount === null) {
       setAmountError('Please enter a valid amount.');
+      hasError = true;
+    }
+    if (selectedExpenseType === 'add-new') {
+      if (newExpenseType === '') {
+        setNewExpenseTypeError('Please enter an Expense Type.');
+        hasError = true;
+      }
+      if (budgetedAmount === null) {
+        setBudgetedAmountError('Please enter a valid amount.');
+        hasError = true;
+      }
+    }
+
+    return hasError;
+  }
+
+  async function handleOnClick() {
+    if (hasErrors()) {
       return;
     }
+
     // if adding a new expense type, use that instead
-    addExpense(newExpenseType !== '' ? newExpenseType : (selectedExpenseType as unknown as string), amount, date);
+    addExpense(
+      newExpenseType !== '' ? newExpenseType : (selectedExpenseType as unknown as string),
+      amount as number,
+      date,
+      frequency,
+      selectedParentExpenseType
+    );
     await getTypes();
     onClose();
     resetState();
@@ -62,7 +99,7 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
   return (
     <>
       <FormBlock isInvalid={selectedExpenseError}>
-        <FormLabel>Expense Type</FormLabel>
+        <Label>Expense Type</Label>
         <Select
           placeholder="Select Expense Type"
           value={selectedExpenseType as unknown as string}
@@ -81,19 +118,61 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
         {selectedExpenseError && <FormErrorMessage>{selectedExpenseError}</FormErrorMessage>}
       </FormBlock>
       {selectedExpenseType === 'add-new' && (
-        <FormBlock>
-          <FormLabel>New Expense Type</FormLabel>
-          <Input
-            placeholder="Expense type"
-            type="text"
-            onChange={(e) => {
-              setNewExpenseType(e.target.value);
-            }}
-          />
-        </FormBlock>
+        <>
+          <FormBlock isInvalid={newExpenseTypeError}>
+            <Label>New Expense Type</Label>
+            <Input
+              placeholder="Expense type"
+              type="text"
+              onChange={(e) => {
+                setNewExpenseType(e.target.value);
+                setNewExpenseTypeError('');
+              }}
+            />
+            {newExpenseTypeError && <FormErrorMessage>{newExpenseTypeError}</FormErrorMessage>}
+          </FormBlock>
+          <FormBlock>
+            <Label>Parent Expense Type (optional)</Label>
+            <Select
+              placeholder="Select Expense Type"
+              value={selectedParentExpenseType as unknown as string}
+              onChange={(e) => {
+                setSelectedParentExpenseType(e.target.value);
+              }}
+            >
+              {expenseTypes?.map((type) => (
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              ))}
+            </Select>
+          </FormBlock>
+          <FormBlock>
+            <Label>Frequency</Label>
+            <RadioGroup onChange={setFrequency} value={frequency}>
+              <Stack direction="row">
+                <Radio value="Monthly">Monthly</Radio>
+                <Radio value="Bi-Weekly">Bi-Weekly</Radio>
+              </Stack>
+            </RadioGroup>
+          </FormBlock>
+          <FormBlock isInvalid={budgetedAmountError}>
+            <Label>Budgeted Amount</Label>
+            <Input
+              placeholder="10"
+              type="number"
+              value={budgetedAmount as number}
+              onChange={(e) => {
+                setBudgetedAmount(e.target.value as unknown as number);
+                setBudgetedAmountError('');
+              }}
+            />
+            {budgetedAmountError && <FormErrorMessage>{budgetedAmountError}</FormErrorMessage>}
+          </FormBlock>
+        </>
       )}
       <FormBlock isInvalid={amountError}>
-        <FormLabel>Amount</FormLabel>
+        <Label>Amount</Label>
         <Input
           placeholder="10"
           type="number"
@@ -106,7 +185,7 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
         {amountError && <FormErrorMessage>{amountError}</FormErrorMessage>}
       </FormBlock>
       <FormBlock>
-        <FormLabel>Date</FormLabel>
+        <Label>Date</Label>
         <Input
           type="date"
           value={date as unknown as string}
@@ -116,6 +195,7 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
         />
         {amountError && <FormErrorMessage>{amountError}</FormErrorMessage>}
       </FormBlock>
+
       <Button onClick={handleOnClick}>+ Add Expense</Button>
       <Button onClick={handleClose} type="outline">
         Close
