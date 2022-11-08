@@ -70,16 +70,14 @@ export default function Home() {
   const { user } = useUser();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [expenseTypes, setExpenseTypes] = useState<string[]>([]);
-  // @ts-ignore
-  const [selectedExpenseType, setSelectedExpenseType] = useState<Expense | null>('');
+  const [selectedExpenseType, setSelectedExpenseType] = useState<string | null>(null);
   const [newExpenseType, setNewExpenseType] = useState('');
-  const [amount, setAmount] = useState(null);
+  const [amount, setAmount] = useState<number | null>(null);
   const expenses = useGetExpenses();
 
   function resetState() {
     // reset the state
-    // @ts-ignore
-    setSelectedExpenseType('');
+    setSelectedExpenseType(null);
     setNewExpenseType('');
     setAmount(null);
   }
@@ -89,8 +87,7 @@ export default function Home() {
       return; // TODO: add error handling
     }
     // if adding a new expense type, use that instead
-    // @ts-ignore
-    addExpense(newExpenseType !== '' ? newExpenseType : selectedExpenseType, amount);
+    addExpense(newExpenseType !== '' ? newExpenseType : (selectedExpenseType as unknown as string), amount);
     await getTypes();
     onClose();
     resetState();
@@ -103,8 +100,9 @@ export default function Home() {
 
   async function getTypes() {
     getExpenseTypes().then((types) => {
-      // @ts-ignore
-      setExpenseTypes(types);
+      if (types && types.length) {
+        setExpenseTypes(types);
+      }
     });
   }
 
@@ -139,9 +137,7 @@ export default function Home() {
               <FormLabel>Expense Type</FormLabel>
               <Select
                 placeholder="Select Expense Type"
-                // @ts-ignore
-                value={selectedExpenseType}
-                // @ts-ignore
+                value={selectedExpenseType as unknown as string}
                 onChange={(e) => setSelectedExpenseType(e.target.value)}
               >
                 {expenseTypes?.map((type) => (
@@ -152,31 +148,25 @@ export default function Home() {
                 <option value="add-new">+ Add New Type</option>
               </Select>
             </FormBlock>
-            {
-              // @ts-ignore
-              selectedExpenseType === 'add-new' && (
-                <FormBlock>
-                  <FormLabel>Expense Type</FormLabel>
-                  <Input
-                    placeholder="Expense type"
-                    type="text"
-                    onChange={(e) => {
-                      // @ts-ignore
-                      setNewExpenseType(e.target.value);
-                    }}
-                  />
-                </FormBlock>
-              )
-            }
+            {selectedExpenseType === 'add-new' && (
+              <FormBlock>
+                <FormLabel>New Expense Type</FormLabel>
+                <Input
+                  placeholder="Expense type"
+                  type="text"
+                  onChange={(e) => {
+                    setNewExpenseType(e.target.value);
+                  }}
+                />
+              </FormBlock>
+            )}
             <FormBlock>
               <FormLabel>Amount</FormLabel>
               <Input
                 placeholder="10"
                 type="number"
-                // @ts-ignore
-                value={amount}
-                // @ts-ignore
-                onChange={(e) => setAmount(e.target.value)}
+                value={amount as number}
+                onChange={(e) => setAmount(e.target.value as unknown as number)}
               />
             </FormBlock>
           </ModalBody>

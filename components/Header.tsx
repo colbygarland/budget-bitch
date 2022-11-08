@@ -23,6 +23,8 @@ const Title = styled.h2`
 const MenuButton = styled(HiDotsHorizontal)`
   fill: ${colors.white};
   position: absolute;
+  right: 30px;
+  top: 30px;
 `;
 
 const Menu = styled.div`
@@ -39,8 +41,8 @@ const Menu = styled.div`
 
 const CloseButton = styled.button`
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 25px;
+  right: 30px;
 `;
 
 const MenuList = styled.ul`
@@ -56,8 +58,8 @@ export const Header = ({ pageTitle }: { pageTitle: string }) => {
 
   return (
     <Container>
-      <MenuButton onClick={() => setMenuVisible(!menuVisible)} />
       <Title>{pageTitle}</Title>
+      <MenuButton onClick={() => setMenuVisible(!menuVisible)} />
       {menuVisible && (
         <Menu>
           <CloseButton onClick={() => setMenuVisible(false)}>✖</CloseButton>
