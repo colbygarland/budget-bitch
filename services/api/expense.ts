@@ -14,7 +14,7 @@ export const addExpense = async (
   amount: number,
   date?: string,
   frequency?: string,
-  parentExpenseType?: string
+  parentExpenseType?: string | null
 ) => {
   const expenseRef = ref(firebaseDatabase, 'expenses');
   const newExpense = push(expenseRef);

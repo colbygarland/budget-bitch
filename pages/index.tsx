@@ -5,18 +5,10 @@ import { Header } from '../components/Header';
 import { colors } from '../theme/colors';
 import { Button } from '../components/Button';
 import { Expense, useGetExpenses } from '../services/api/expense';
-import {
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  Container,
-} from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { zIndex } from '../theme/zIndex';
 import { AddExpenseForm } from '../components/forms/AddExpenseForm';
+import { Modal } from '../components/Modal';
 
 const Page = styled.div`
   background-color: ${colors.primary};
@@ -88,17 +80,7 @@ export default function Home() {
       </Price>
       <p>Out of $4,000 budgeted for this month</p>
       <FloatingButton onClick={onOpen}>+ Add Expense</FloatingButton>
-      <Modal isOpen={isOpen} onClose={onClose} size="sm">
-        <ModalOverlay />
-        <Container></Container>
-        <ModalContent>
-          <ModalHeader>Add Expense</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <AddExpenseForm onClose={onClose} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <Modal title="Add Expense" body={<AddExpenseForm onClose={onClose} />} isOpen={isOpen} onClose={onClose} />
       {expenses.map((expense) => {
         return (
           <p>
