@@ -145,7 +145,9 @@ export default function Home() {
                 onChange={(e) => setSelectedExpenseType(e.target.value)}
               >
                 {expenseTypes?.map((type) => (
-                  <option value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
+                  <option key={type} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </option>
                 ))}
                 <option value="add-new">+ Add New Type</option>
               </Select>
