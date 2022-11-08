@@ -1,17 +1,9 @@
-import { FormControl, FormLabel, Select, FormErrorMessage, Input, RadioGroup, Stack, Radio } from '@chakra-ui/react';
+import { Select, FormErrorMessage, Input, RadioGroup, Stack, Radio } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { addExpense, getExpenseTypes } from '../../services/api/expense';
 import { getCurrentDate } from '../../utils/date';
 import { Button } from '../Button';
-
-const FormBlock = styled(FormControl)`
-  margin-bottom: 16px;
-`;
-
-const Label = styled(FormLabel)`
-  font-weight: 700 !important;
-`;
+import { FormBlock, Label } from './shared';
 
 export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
   const [expenseTypes, setExpenseTypes] = useState<string[]>([]);
@@ -193,7 +185,6 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
             setDate(e.target.value as string);
           }}
         />
-        {amountError && <FormErrorMessage>{amountError}</FormErrorMessage>}
       </FormBlock>
 
       <Button onClick={handleOnClick}>+ Add Expense</Button>

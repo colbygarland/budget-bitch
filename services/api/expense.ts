@@ -1,4 +1,4 @@
-import { child, get, ref, set, push, onValue } from 'firebase/database';
+import { child, get, ref, set, push, onValue, query, startAt, endAt, orderByChild } from 'firebase/database';
 import { useEffect, useState } from 'react';
 import { getCurrentDate } from '../../utils/date';
 import { firebaseDatabase } from '../firebase';
@@ -56,9 +56,9 @@ export const getExpense = async (expenseType: string): Promise<Expense | null> =
   return null;
 };
 
-export const useGetExpenses = () => {
+export const useGetExpenses = (from: string, to: string) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const expensesRef = ref(firebaseDatabase, 'expenses/');
+  const expensesRef = query(ref(firebaseDatabase, 'expenses/'), orderByChild('createdAt'), startAt(from), endAt(to));
 
   useEffect(() => {
     onValue(expensesRef, (snapshot) => {
@@ -70,7 +70,7 @@ export const useGetExpenses = () => {
     });
 
     // return () => expensesRef.off();
-  }, []);
+  }, [from, to]);
 
   return expenses;
 };

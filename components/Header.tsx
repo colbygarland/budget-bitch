@@ -13,6 +13,7 @@ const Container = styled.header`
   padding: ${spacing.sm};
   margin-bottom: 40px;
   text-align: center;
+  padding-top: 20px;
 `;
 
 const Title = styled.h2`
@@ -24,6 +25,12 @@ const MenuButton = styled(HiOutlineMenuAlt3).attrs({ size: 30 })`
   fill: ${colors.white};
   position: absolute;
   right: 20px;
+  top: 20px;
+`;
+
+const LeftActionButton = styled.span`
+  position: absolute;
+  left: 20px;
   top: 20px;
 `;
 
@@ -67,12 +74,13 @@ const MenuItem = styled.li`
   margin-bottom: 15px;
 `;
 
-export const Header = ({ pageTitle }: { pageTitle: string }) => {
+export const Header = ({ pageTitle, leftActionButton }: { pageTitle: string; leftActionButton?: React.ReactNode }) => {
   const { logout } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
 
   return (
     <Container>
+      {leftActionButton && <LeftActionButton>{leftActionButton}</LeftActionButton>}
       <Title>{pageTitle}</Title>
       <MenuButton onClick={() => setMenuVisible(!menuVisible)} />
       <Menu show={menuVisible}>

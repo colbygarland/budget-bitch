@@ -9,11 +9,15 @@ import { useDisclosure } from '@chakra-ui/react';
 import { zIndex } from '../theme/zIndex';
 import { AddExpenseForm } from '../components/forms/AddExpenseForm';
 import { Modal } from '../components/Modal';
+import { useState } from 'react';
+import { getBeginningOfMonth, getCurrentDate, getMonthName, getYear } from '../utils/date';
+import { HiCalendar } from 'react-icons/hi';
+import { ChangeDatePeriodForm } from '../components/forms/ChangeDatePeriodForm';
 
 const Page = styled.div`
   background-color: ${colors.primary};
+  min-height: 100vh;
   color: ${colors.white};
-  padding-top: 40px;
   padding-left: 20px;
   padding-right: 20px;
 `;
@@ -50,6 +54,8 @@ const FloatingButton = styled(Button)`
   z-index: ${zIndex[100]};
 `;
 
+const CalendarButton = styled(HiCalendar).attrs({ size: 30 })``;
+
 function calculateExpenses(expenses: Expense[]) {
   let total = 0;
   expenses.map((expense) => {
@@ -60,9 +66,14 @@ function calculateExpenses(expenses: Expense[]) {
 
 export default function Home() {
   const { user } = useUser();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: addExpenseIsOpen, onOpen: addExpenseOnOpen, onClose: addExpenseOnClose } = useDisclosure();
+  const { isOpen: calendarIsOpen, onOpen: calendarOnOpen, onClose: calendarOnClose } = useDisclosure();
+  const [to, setTo] = useState(getCurrentDate());
+  const from = getBeginningOfMonth(to);
 
-  const expenses = useGetExpenses();
+  const title = `${getMonthName(to)} ${getYear(to)}`;
+
+  const expenses = useGetExpenses(from, to);
 
   if (!user) {
     return (
@@ -74,13 +85,13 @@ export default function Home() {
 
   return (
     <Page>
-      <Header pageTitle="Dashboard" />
+      <Header pageTitle={title} leftActionButton={<CalendarButton onClick={calendarOnOpen} />} />
       <Price>
         $ {calculateExpenses(expenses)} <Pill>+8%</Pill>
       </Price>
       <p>Out of $4,000 budgeted for this month</p>
-      <FloatingButton onClick={onOpen}>+ Add Expense</FloatingButton>
-      <Modal title="Add Expense" body={<AddExpenseForm onClose={onClose} />} isOpen={isOpen} onClose={onClose} />
+      <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
+
       {expenses.map((expense) => {
         return (
           <p>
@@ -88,6 +99,19 @@ export default function Home() {
           </p>
         );
       })}
+      <Modal
+        title="Add Expense"
+        body={<AddExpenseForm onClose={addExpenseOnClose} />}
+        isOpen={addExpenseIsOpen}
+        onClose={addExpenseOnClose}
+      />
+      <Modal
+        title="Change Date Period"
+        // @ts-ignore
+        body={<ChangeDatePeriodForm date={to} setDate={setTo} close={calendarOnClose} />}
+        isOpen={calendarIsOpen}
+        onClose={calendarOnClose}
+      />
     </Page>
   );
 }
