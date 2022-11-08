@@ -21,6 +21,7 @@ import {
   FormControl,
   FormLabel,
 } from '@chakra-ui/react';
+import { zIndex } from '../theme/zIndex';
 
 const Page = styled.div`
   background-color: ${colors.primary};
@@ -52,6 +53,14 @@ const Pill = styled.span`
   position: relative;
   bottom: 10px;
   margin-left: 12px;
+`;
+
+const FloatingButton = styled(Button)`
+  position: fixed;
+  margin: 0;
+  bottom: 40px;
+  right: 40px;
+  z-index: ${zIndex[100]};
 `;
 
 const FormBlock = styled(FormControl)`
@@ -125,7 +134,7 @@ export default function Home() {
         $ {calculateExpenses(expenses)} <Pill>+8%</Pill>
       </Price>
       <p>Out of $4,000 budgeted for this month</p>
-      <Button onClick={onOpen}>+ Add Expense</Button>
+      <FloatingButton onClick={onOpen}>+ Add Expense</FloatingButton>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <Container></Container>

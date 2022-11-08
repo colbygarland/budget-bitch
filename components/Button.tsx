@@ -22,6 +22,7 @@ export const Button = ({
   children,
   onClick,
   type = 'primary',
+  ...props
 }: {
   children: any;
   onClick: () => void;
@@ -34,5 +35,9 @@ export const Button = ({
       break;
   }
 
-  return <Btn onClick={onClick}>{children}</Btn>;
+  return (
+    <Btn onClick={onClick} {...props}>
+      {children}
+    </Btn>
+  );
 };
