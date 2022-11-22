@@ -34,18 +34,6 @@ const Price = styled.h2`
   margin-bottom: 8px;
 `;
 
-const Pill = styled.span`
-  display: inline-block;
-  background-color: ${colors.secondary};
-  color: ${colors.white};
-  font-size: 30%;
-  padding: 6px 12px;
-  border-radius: 30px;
-  position: relative;
-  bottom: 10px;
-  margin-left: 12px;
-`;
-
 const FloatingButton = styled(Button)`
   position: fixed;
   margin: 0;
