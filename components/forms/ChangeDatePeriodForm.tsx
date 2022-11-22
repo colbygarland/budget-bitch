@@ -11,7 +11,6 @@ export const ChangeDatePeriodForm = ({
   setDate: React.SetStateAction<string>;
   close: () => void;
 }) => {
-  console.log(date);
   return (
     <>
       <FormBlock>
