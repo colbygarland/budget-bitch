@@ -10,7 +10,7 @@ import { zIndex } from '../theme/zIndex';
 import { AddExpenseForm } from '../components/forms/AddExpenseForm';
 import { Modal } from '../components/Modal';
 import { useState } from 'react';
-import { getBeginningOfMonth, getCurrentDate, getMonthName, getYear } from '../utils/date';
+import { getBeginningOfMonth, getCurrentMonth, getMonthName, getYear } from '../utils/date';
 import { HiCalendar } from 'react-icons/hi';
 import { ChangeDatePeriodForm } from '../components/forms/ChangeDatePeriodForm';
 
@@ -68,7 +68,7 @@ export default function Home() {
   const { user } = useUser();
   const { isOpen: addExpenseIsOpen, onOpen: addExpenseOnOpen, onClose: addExpenseOnClose } = useDisclosure();
   const { isOpen: calendarIsOpen, onOpen: calendarOnOpen, onClose: calendarOnClose } = useDisclosure();
-  const [to, setTo] = useState(getCurrentDate());
+  const [to, setTo] = useState(getCurrentMonth());
   const from = getBeginningOfMonth(to);
 
   const title = `${getMonthName(to)} ${getYear(to)}`;
@@ -85,16 +85,20 @@ export default function Home() {
 
   return (
     <Page>
-      <Header pageTitle={title} leftActionButton={<CalendarButton onClick={calendarOnOpen} />} />
+      <Header
+        onTitleClick={calendarOnOpen}
+        pageTitle={title}
+        leftActionButton={<CalendarButton onClick={calendarOnOpen} />}
+      />
       <Price>
         $ {calculateExpenses(expenses)} <Pill>+8%</Pill>
       </Price>
       <p>Out of $4,000 budgeted for this month</p>
       <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
 
-      {expenses.map((expense) => {
+      {expenses.map((expense, index) => {
         return (
-          <p>
+          <p key={index}>
             type: {expense.expenseType}, amount: {expense.amount}
           </p>
         );

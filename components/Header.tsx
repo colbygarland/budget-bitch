@@ -74,14 +74,22 @@ const MenuItem = styled.li`
   margin-bottom: 15px;
 `;
 
-export const Header = ({ pageTitle, leftActionButton }: { pageTitle: string; leftActionButton?: React.ReactNode }) => {
+export const Header = ({
+  pageTitle,
+  leftActionButton,
+  onTitleClick,
+}: {
+  pageTitle: string;
+  leftActionButton?: React.ReactNode;
+  onTitleClick?: () => void;
+}) => {
   const { logout } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
 
   return (
     <Container>
       {leftActionButton && <LeftActionButton>{leftActionButton}</LeftActionButton>}
-      <Title>{pageTitle}</Title>
+      <Title onClick={onTitleClick}>{pageTitle}</Title>
       <MenuButton onClick={() => setMenuVisible(!menuVisible)} />
       <Menu show={menuVisible}>
         <CloseButton onClick={() => setMenuVisible(false)} />

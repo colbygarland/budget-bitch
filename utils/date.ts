@@ -2,11 +2,19 @@ const formatDate = (date: Date) => {
   return date.toISOString().split('T')[0];
 };
 
-export const getCurrentDate = () => {
+const getNow = (): Date => {
   let now = new Date();
   const offset = now.getTimezoneOffset();
-  now = new Date(now.getTime() - offset * 60 * 1000);
-  return formatDate(now);
+  return new Date(now.getTime() - offset * 60 * 1000);
+};
+
+export const getCurrentDate = () => {
+  return formatDate(getNow());
+};
+
+export const getCurrentMonth = () => {
+  const currentDate = getCurrentDate().split('-');
+  return `${currentDate[0]}-${currentDate[1]}`;
 };
 
 export const getBeginningOfMonth = (date: string) => {
@@ -29,11 +37,10 @@ const monthNames = [
   'December',
 ];
 export const getMonthName = (date: string) => {
-  const d = new Date(date);
-  return monthNames[d.getMonth()];
+  const month = Number(date.split('-')[1]);
+  return monthNames[month - 1];
 };
 
 export const getYear = (date: string) => {
-  const d = new Date(date);
-  return d.getFullYear();
+  return date.split('-')[0];
 };
