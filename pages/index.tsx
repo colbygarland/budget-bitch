@@ -90,9 +90,7 @@ export default function Home() {
         pageTitle={title}
         leftActionButton={<CalendarButton onClick={calendarOnOpen} />}
       />
-      <Price>
-        $ {calculateExpenses(expenses)} <Pill>+8%</Pill>
-      </Price>
+      <Price>$ {calculateExpenses(expenses)}</Price>
       <p>Out of $4,000 budgeted for this month</p>
       <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
 
