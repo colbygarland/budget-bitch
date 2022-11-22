@@ -18,8 +18,12 @@ export const getCurrentMonth = () => {
 };
 
 export const getBeginningOfMonth = (date: string) => {
+  return `${date}-01`;
+};
+
+export const getEndOfMonth = (date: string) => {
   const d = new Date(date);
-  return formatDate(new Date(d.getFullYear(), d.getMonth(), 1));
+  return formatDate(new Date(d.getFullYear(), d.getMonth() + 2, 0));
 };
 
 const monthNames = [

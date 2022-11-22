@@ -58,7 +58,7 @@ export const getExpense = async (expenseType: string): Promise<Expense | null> =
 
 export const useGetExpenses = (from: string, to: string) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const expensesRef = query(ref(firebaseDatabase, 'expenses/'), orderByChild('createdAt'), startAt(from), endAt(to));
+  const expensesRef = query(ref(firebaseDatabase, 'expenses'), orderByChild('createdAt'), startAt(from), endAt(to));
 
   useEffect(() => {
     onValue(expensesRef, (snapshot) => {

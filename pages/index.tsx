@@ -5,12 +5,20 @@ import { Header } from '../components/Header';
 import { colors } from '../theme/colors';
 import { Button } from '../components/Button';
 import { Expense, useGetExpenses } from '../services/api/expense';
-import { useDisclosure } from '@chakra-ui/react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { zIndex } from '../theme/zIndex';
 import { AddExpenseForm } from '../components/forms/AddExpenseForm';
 import { Modal } from '../components/Modal';
 import { useState } from 'react';
-import { getBeginningOfMonth, getCurrentMonth, getMonthName, getYear } from '../utils/date';
+import { getBeginningOfMonth, getCurrentMonth, getEndOfMonth, getMonthName, getYear } from '../utils/date';
 import { HiCalendar } from 'react-icons/hi';
 import { ChangeDatePeriodForm } from '../components/forms/ChangeDatePeriodForm';
 
@@ -42,7 +50,44 @@ const FloatingButton = styled(Button)`
   z-index: ${zIndex[100]};
 `;
 
+const ExpenseLineItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const CalendarButton = styled(HiCalendar).attrs({ size: 30 })``;
+
+const Expenses = ({ expenses }: { expenses: Expense[] }) => {
+  const expenseTypes = new Set(expenses.map((e) => e.expenseType));
+  return (
+    <Accordion>
+      {[...expenseTypes].sort().map((type, index) => {
+        return (
+          <AccordionItem key={index}>
+            <AccordionButton>
+              <Box flex="1" textAlign="left">
+                {type as string}
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4}>
+              {expenses.map((e, index) => {
+                if (e.expenseType === type) {
+                  return (
+                    <ExpenseLineItem key={index}>
+                      <span>$ {e.amount}</span>
+                      <span>{e.createdAt}</span>
+                    </ExpenseLineItem>
+                  );
+                }
+              })}
+            </AccordionPanel>
+          </AccordionItem>
+        );
+      })}
+    </Accordion>
+  );
+};
 
 function calculateExpenses(expenses: Expense[]) {
   let total = 0;
@@ -61,7 +106,7 @@ export default function Home() {
 
   const title = `${getMonthName(to)} ${getYear(to)}`;
 
-  const expenses = useGetExpenses(from, to);
+  const expenses = useGetExpenses(from, getEndOfMonth(to));
 
   if (!user) {
     return (
@@ -79,16 +124,9 @@ export default function Home() {
         leftActionButton={<CalendarButton onClick={calendarOnOpen} />}
       />
       <Price>$ {calculateExpenses(expenses)}</Price>
-      <p>Out of $4,000 budgeted for this month</p>
-      <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
 
-      {expenses.map((expense, index) => {
-        return (
-          <p key={index}>
-            type: {expense.expenseType}, amount: {expense.amount}
-          </p>
-        );
-      })}
+      <Expenses expenses={expenses} />
+
       <Modal
         title="Add Expense"
         body={<AddExpenseForm onClose={addExpenseOnClose} />}
@@ -102,6 +140,7 @@ export default function Home() {
         isOpen={calendarIsOpen}
         onClose={calendarOnClose}
       />
+      <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
     </Page>
   );
 }
