@@ -3,24 +3,17 @@ import styled from 'styled-components';
 import { Loader } from '../components/Loader';
 import { Header } from '../components/Header';
 import { colors } from '../theme/colors';
-import { Button } from '../components/Button';
-import { Expense, useGetExpenses } from '../services/api/expense';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  useDisclosure,
-} from '@chakra-ui/react';
-import { zIndex } from '../theme/zIndex';
+import { useGetExpenses } from '../services/api/expense';
+import { useDisclosure } from '@chakra-ui/react';
 import { AddExpenseForm } from '../components/forms/AddExpenseForm';
 import { Modal } from '../components/Modal';
 import { useState } from 'react';
 import { getBeginningOfMonth, getCurrentMonth, getEndOfMonth, getMonthName, getYear } from '../utils/date';
 import { HiCalendar } from 'react-icons/hi';
 import { ChangeDatePeriodForm } from '../components/forms/ChangeDatePeriodForm';
+import { Expenses } from '../components/Expenses';
+import { calculateTotalBudgetedPrice, calculateTotalPrice } from '../utils/expenses';
+import { FloatingButton } from '../components/FloatingButton';
 
 const Page = styled.div`
   background-color: ${colors.primary};
@@ -38,64 +31,17 @@ const Loading = styled.div`
 `;
 
 const Price = styled.h2`
-  font-size: 40px;
-  margin-bottom: 8px;
+  font-size: 46px;
+  margin-bottom: 0;
 `;
 
-const FloatingButton = styled(Button)`
-  position: fixed;
-  margin: 0;
-  bottom: 40px;
-  right: 40px;
-  z-index: ${zIndex[100]};
-`;
-
-const ExpenseLineItem = styled.div`
-  display: flex;
-  justify-content: space-between;
+const OutOf = styled.p`
+  font-size: 16px;
+  margin-bottom: 40px;
+  margin-left: 40px;
 `;
 
 const CalendarButton = styled(HiCalendar).attrs({ size: 30 })``;
-
-const Expenses = ({ expenses }: { expenses: Expense[] }) => {
-  const expenseTypes = new Set(expenses.map((e) => e.expenseType));
-  return (
-    <Accordion>
-      {[...expenseTypes].sort().map((type, index) => {
-        return (
-          <AccordionItem key={index}>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                {type as string}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-            <AccordionPanel pb={4}>
-              {expenses.map((e, index) => {
-                if (e.expenseType === type) {
-                  return (
-                    <ExpenseLineItem key={index}>
-                      <span>$ {e.amount}</span>
-                      <span>{e.createdAt}</span>
-                    </ExpenseLineItem>
-                  );
-                }
-              })}
-            </AccordionPanel>
-          </AccordionItem>
-        );
-      })}
-    </Accordion>
-  );
-};
-
-function calculateExpenses(expenses: Expense[]) {
-  let total = 0;
-  expenses.map((expense) => {
-    total += Number(expense.amount);
-  });
-  return total;
-}
 
 export default function Home() {
   const { user } = useUser();
@@ -103,10 +49,10 @@ export default function Home() {
   const { isOpen: calendarIsOpen, onOpen: calendarOnOpen, onClose: calendarOnClose } = useDisclosure();
   const [to, setTo] = useState(getCurrentMonth());
   const from = getBeginningOfMonth(to);
+  const expenses = useGetExpenses(from, getEndOfMonth(to));
+  const totalMonthBudget = calculateTotalBudgetedPrice(expenses);
 
   const title = `${getMonthName(to)} ${getYear(to)}`;
-
-  const expenses = useGetExpenses(from, getEndOfMonth(to));
 
   if (!user) {
     return (
@@ -123,7 +69,8 @@ export default function Home() {
         pageTitle={title}
         leftActionButton={<CalendarButton onClick={calendarOnOpen} />}
       />
-      <Price>$ {calculateExpenses(expenses)}</Price>
+      <Price>$ {calculateTotalPrice(expenses)}</Price>
+      <OutOf>spent out of $ {totalMonthBudget}</OutOf>
 
       <Expenses expenses={expenses} />
 
@@ -140,7 +87,7 @@ export default function Home() {
         isOpen={calendarIsOpen}
         onClose={calendarOnClose}
       />
-      <FloatingButton onClick={addExpenseOnOpen}>+ Add Expense</FloatingButton>
+      <FloatingButton onClick={addExpenseOnOpen} title="+ Add Expense" />
     </Page>
   );
 }
