@@ -4,9 +4,12 @@ import { getCurrentDate } from '../../utils/date';
 import { firebaseDatabase } from '../firebase';
 
 export interface Expense {
-  expenseType: string;
   amount: number;
-  createdAt: number;
+  budgetedAmount: number | null;
+  createdAt: string;
+  expenseType: string;
+  frequency: string;
+  parentExpenseType: string;
 }
 
 export const addExpense = async (
@@ -14,7 +17,8 @@ export const addExpense = async (
   amount: number,
   date?: string,
   frequency?: string,
-  parentExpenseType?: string | null
+  parentExpenseType?: string | null,
+  budgetedAmount?: number | null
 ) => {
   const expenseRef = ref(firebaseDatabase, 'expenses');
   const newExpense = push(expenseRef);
@@ -24,6 +28,7 @@ export const addExpense = async (
     createdAt: date ?? getCurrentDate(),
     frequency: frequency ?? 'Monthly',
     parentExpenseType: parentExpenseType ?? '',
+    budgetedAmount: budgetedAmount ?? null,
   });
 };
 

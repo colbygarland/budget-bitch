@@ -72,7 +72,8 @@ export const AddExpenseForm = ({ onClose }: { onClose: () => void }) => {
       amount as number,
       date,
       frequency,
-      selectedParentExpenseType
+      selectedParentExpenseType,
+      budgetedAmount
     );
     await getTypes();
     onClose();

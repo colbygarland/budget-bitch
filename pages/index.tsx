@@ -12,7 +12,7 @@ import { getBeginningOfMonth, getCurrentMonth, getEndOfMonth, getMonthName, getY
 import { HiCalendar } from 'react-icons/hi';
 import { ChangeDatePeriodForm } from '../components/forms/ChangeDatePeriodForm';
 import { Expenses } from '../components/Expenses';
-import { calculateTotalPrice } from '../utils/expenses';
+import { calculateTotalBudgetedPrice, calculateTotalPrice } from '../utils/expenses';
 import { FloatingButton } from '../components/FloatingButton';
 
 const Page = styled.div`
@@ -50,7 +50,7 @@ export default function Home() {
   const [to, setTo] = useState(getCurrentMonth());
   const from = getBeginningOfMonth(to);
   const expenses = useGetExpenses(from, getEndOfMonth(to));
-  const totalMonthBudget = 0;
+  const totalMonthBudget = calculateTotalBudgetedPrice(expenses);
 
   const title = `${getMonthName(to)} ${getYear(to)}`;
 
