@@ -1,5 +1,4 @@
 import type { AppProps } from 'next/app';
-import { StoreProvider, rootStore } from '../stores/rootStore';
 import { PageHead } from '../components/PageHead';
 import '../services/firebase';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -18,13 +17,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     });
   }, []);
   return (
-    <StoreProvider value={rootStore}>
+    <>
       <PageHead />
       <GlobalStyle />
       <ChakraProvider>
         <Component {...pageProps} />
       </ChakraProvider>
-    </StoreProvider>
+    </>
   );
 }
 

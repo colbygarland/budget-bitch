@@ -1,13 +1,13 @@
 ## BudgetBitch 💅
 
-Simple budget app built for my wife! 
-
+Simple budget app built for my wife!
 
 ### Libraries
 
 - NextJS
-- mobx-state-tree / mobx-react-lite
-- Tailwind
+- Firebase
+- Chakra UI
+- Styled Components
 - Typescript
 - Prettier
 - ESLint
